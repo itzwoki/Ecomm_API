@@ -4,8 +4,9 @@ from sqlalchemy.orm import relationship
 from db.db_setup import Base
 from .mixins import TimeStamp
 from enum import Enum as PyEnum
+from sqlalchemy.orm import validates
 
-class UserRole(PyEnum):
+class UserRoleEnum(str, PyEnum):
     ADMIN = "admin"
     USER = "user"
 
@@ -16,7 +17,7 @@ class User(Base, TimeStamp):
     username = Column(String, unique=True, nullable=True)
     email = Column(String, unique=True, nullable=True)
     hashed_password = Column(String, nullable=False)
-    role = Column(Enum(UserRole), default=UserRole.USER)
+    role = Column(Enum(UserRoleEnum, name="userrole_enum"), default=UserRoleEnum.USER)
 
     carts = relationship("Cart", back_populates="user")
     orders = relationship("Order", back_populates="user")
