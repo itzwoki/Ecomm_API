@@ -65,3 +65,43 @@ async def product_create(
     db.refresh(new_product)
 
     return new_product
+
+async def product_update(
+        product_id: int,
+        productup : ProductUpdate,
+        db: Session
+):
+    product = db.query(Product).filter(Product.id == product_id).first()
+
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"No Product with the ID: {product_id}."
+        )
+    
+    update_data = productup.model_dump(exclude_unset=True)  # Get only fields that are set
+    for field, value in update_data.items():
+        setattr(product, field, value)
+
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+
+    return product
+
+async def del_pro_by_id(
+        product_id : int,
+        db: Session
+):
+    product = db.query(Product).filter(Product.id == product_id).first()
+
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with ID: {product_id} doesn't exist."
+        )
+    if product:
+        db.delete(product)
+        db.commit()
+        
+        return {
+            "message" : "Product Deleted Successfully." 
+        }

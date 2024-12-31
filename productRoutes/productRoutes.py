@@ -5,8 +5,8 @@ from typing import List
 
 from db.db_setup import get_db
 from userRoutes.dependencies.currentUser import check_admin, get_current_user
-from .utils import product_create, get_products, get_product, search_name
-from py_schemas.product import ProductCreate, ProductResponse
+from .utils import product_create, get_products, get_product, search_name, product_update, del_pro_by_id
+from py_schemas.product import ProductCreate, ProductResponse, ProductUpdate
 
 router = APIRouter(prefix="/products")
 
@@ -65,3 +65,31 @@ async def search_by_name(
     if not user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authrorized.")
     return await search_name(product_name, db)
+
+@router.patch("/update-product/{product_id}", response_model=ProductResponse)
+async def update_product_by_id(
+        product_id : int,
+        product: ProductUpdate,
+        db: Session = Depends(get_db),
+        current_admin : dict = Depends(check_admin)
+):
+    id = current_admin.id
+    if not id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permission Denied"
+        )
+    return await product_update(product_id, product, db)
+
+@router.delete("/delete-by-id/{product_id}")
+async def delete_by_id(
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_admin: dict =  Depends(check_admin)
+):
+    id = current_admin.id
+
+    if not id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized.")
+    
+    return await del_pro_by_id(product_id, db)
