@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from db.db_setup import engine
 from db.models import user,product, order, cart, order_item,payment
 from userRoutes.userRoutes import router as userRouter
+from productRoutes.productRoutes import router as productRouter
 
 
 user.Base.metadata.create_all(bind=engine)
@@ -26,3 +27,4 @@ license_info={
 )
 
 app.include_router(userRouter)
+app.include_router(productRouter)

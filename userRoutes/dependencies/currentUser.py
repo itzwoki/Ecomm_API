@@ -37,3 +37,15 @@ def get_current_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
     
     return user
+
+def check_admin(
+        token : str = Depends(oauth2_scheme),
+        db: Session = Depends(get_db)
+):
+    admin_check = get_current_user(token, db)
+    if admin_check.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permission Denied"
+        )
+    return admin_check

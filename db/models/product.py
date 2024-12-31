@@ -17,4 +17,4 @@ class Product(Base, TimeStamp):
     image_url = Column(String, nullable=True)
 
     cart_items = relationship("Cart", back_populates="product")
-    order_items = relationship("OrderItem", back_populates="product")
+    order_items = relationship("OrderItem", back_populates="product") 
