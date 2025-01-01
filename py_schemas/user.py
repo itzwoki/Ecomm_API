@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 
 class UserRoleEnum(str, Enum):
-    ADMIN = "admin"
+    ADMIN = "admin" 
     USER = "user"
 
 class UserCreate(BaseModel):

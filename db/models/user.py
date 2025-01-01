@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from db.db_setup import Base
 from .mixins import TimeStamp
 from enum import Enum as PyEnum
-from sqlalchemy.orm import validates
+
 
 class UserRoleEnum(str, PyEnum):
     ADMIN = "admin"

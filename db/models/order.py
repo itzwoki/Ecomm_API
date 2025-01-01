@@ -4,8 +4,8 @@ from sqlalchemy.orm import relationship
 from db.db_setup import Base
 from .mixins import TimeStamp
 from enum import Enum as PyEnum
-
-class OrderStatus(PyEnum):
+ 
+class OrderStatusEnum(str, PyEnum):
     PENDING = "pending"
     SHIPPED = "shipped"
     DELIVERED = "delivered"
@@ -17,7 +17,7 @@ class Order(Base, TimeStamp):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     total_price = Column(Float, nullable=False)
-    status = Column(Enum(OrderStatus), default=OrderStatus.PENDING)
+    status = Column(Enum(OrderStatusEnum), default=OrderStatusEnum.PENDING)
 
     user = relationship("User", back_populates="orders")
     order_items = relationship("OrderItem", back_populates="order")
