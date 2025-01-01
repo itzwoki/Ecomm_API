@@ -1,12 +1,12 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 
 from db.db_setup import get_db
 from userRoutes.dependencies.currentUser import check_admin, get_current_user
-from .utils import product_create, get_products, get_product, search_name, product_update, del_pro_by_id
-from py_schemas.product import ProductCreate, ProductResponse, ProductUpdate
+from .utils import product_create, get_products, get_product, search_name, product_update, del_pro_by_id, get_pro_by_cat, filter_product, apply_discount
+from py_schemas.product import ProductCreate, ProductResponse, ProductUpdate, DiscountedProductResponse, DiscountRequest
 
 router = APIRouter(prefix="/products")
 
@@ -93,3 +93,47 @@ async def delete_by_id(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized.")
     
     return await del_pro_by_id(product_id, db)
+
+@router.get("/get-by-category/{category_name}", description="Get All Products for given category")
+async def get_by_category(
+    category_name: str,
+    db: Session = Depends(get_db),
+    current_user : dict = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized.")
+    return await get_pro_by_cat(category_name, db)
+
+@router.get(
+"/filter-products",
+description="Filter Products by category and price",)
+
+async def products_filter(
+    db: Session = Depends(get_db),
+    current_user : dict = Depends(get_current_user),
+    category: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    skip: int = 0,
+    limit: int = 20
+):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized.")
+    
+    return await filter_product(db, category, min_price, max_price, skip, limit)
+
+@router.patch("/apply-discount/{product_id}", description="Apply discount to a product", response_model=DiscountedProductResponse)
+async def apply_discount_route(
+    product_id: int,
+    discount_request : DiscountRequest,
+    db: Session = Depends(get_db),
+    current_admin: dict =  Depends(check_admin)
+):
+    id = current_admin.id
+
+    if not id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized.")
+    
+    discount = discount_request.discount
+    
+    return await apply_discount(db, product_id, discount)

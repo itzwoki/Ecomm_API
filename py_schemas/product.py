@@ -20,6 +20,9 @@ class ProductUpdate(BaseModel):
     category : Optional[str] = None
     image_url : Optional[str] = None
 
+class DiscountRequest(BaseModel):
+    discount: float
+
 
 class ProductResponse(BaseModel):
     id: int
@@ -28,6 +31,11 @@ class ProductResponse(BaseModel):
     stock : int = 0
     created_at : datetime
     updated_at: datetime
+
+class DiscountedProductResponse(ProductResponse):
+    discount_percentage: Optional[float] = 0.0
+    discounted_price: float
+
 
     class Config:
         orm_mode = True
