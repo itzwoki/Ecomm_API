@@ -1,10 +1,12 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
-from fastapi import HTTPException, status, Query
+from fastapi import HTTPException, status
 from typing import Optional
 
 from db.models.product import Product
 from py_schemas.product import ProductCreate, ProductUpdate
+from datetime import datetime
 
 
 async def get_products(
@@ -43,7 +45,7 @@ async def search_name(
 
 async def product_create(
         product : ProductCreate,
-        db: Session
+        db: Session 
 ):
     existing_product = db.query(Product).filter(Product.name == product.name).first()
     if existing_product:
@@ -147,7 +149,8 @@ async def filter_product(
 async def apply_discount(
         db: Session,
         product_id: int,
-        discount: float
+        discount: float,
+        duration: int
 ):
     product = db.query(Product).filter(Product.id == product_id).first()
 
@@ -161,6 +164,40 @@ async def apply_discount(
         )
     
     product.discount_percentage = discount
+    product.discount_start_time = datetime.now()
+    product.discount_duration = duration
+
     db.commit()
     db.refresh(product)
     return product
+
+async def low_stock(
+        db: Session,
+        stock_limit: int = 10,
+        skip: int = 0,
+        limit : int = 4
+):
+    results = (
+        db.query(
+            Product.id,
+            Product.name,
+            func.sum(Product.stock).label("Total_stock")
+        )
+        .filter(Product.stock < stock_limit)
+        .group_by(Product.id, Product.name) 
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+    if not results:
+        return {"message" : f"No Product with Stock less than {stock_limit}"}
+    
+    return [
+        {
+            "Product-ID" : result.id, 
+            "Category" : result.name,
+            "Total_stock" : result.Total_stock
+        }
+        for result in results
+    ]

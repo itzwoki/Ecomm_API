@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from db.db_setup import get_db
 from userRoutes.dependencies.currentUser import check_admin, get_current_user
-from .utils import product_create, get_products, get_product, search_name, product_update, del_pro_by_id, get_pro_by_cat, filter_product, apply_discount
+from .utils import product_create, get_products, get_product, search_name, product_update, del_pro_by_id, get_pro_by_cat, filter_product, apply_discount, low_stock
 from py_schemas.product import ProductCreate, ProductResponse, ProductUpdate, DiscountedProductResponse, DiscountRequest
 
 router = APIRouter(prefix="/products")
@@ -127,7 +127,7 @@ async def apply_discount_route(
     product_id: int,
     discount_request : DiscountRequest,
     db: Session = Depends(get_db),
-    current_admin: dict =  Depends(check_admin)
+    current_admin: dict =  Depends(check_admin) 
 ):
     id = current_admin.id
 
@@ -135,5 +135,19 @@ async def apply_discount_route(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized.")
     
     discount = discount_request.discount
+    duration = discount_request.duration
     
-    return await apply_discount(db, product_id, discount)
+    return await apply_discount(db, product_id, discount, duration)
+
+@router.get("/check-stock", description="Check If Stocks are low.")
+async def check_low_stock(
+    stock_limit: int = Query(10, description="Threshold for low stock"),
+    skip : int = 0,
+    limit : int = 10,
+    db: Session =  Depends(get_db),
+    current_admin : dict = Depends(check_admin)
+):
+    if not current_admin:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized.")
+    
+    return await low_stock(db, stock_limit, skip, limit)

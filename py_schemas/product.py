@@ -22,7 +22,7 @@ class ProductUpdate(BaseModel):
 
 class DiscountRequest(BaseModel):
     discount: float
-
+    duration: Optional[int] = 24
 
 class ProductResponse(BaseModel):
     id: int
