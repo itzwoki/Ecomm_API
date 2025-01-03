@@ -9,8 +9,7 @@ class Cart(Base, TimeStamp):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    quantity = Column(Integer, nullable=False, default=1)
-
-    user = relationship("User", back_populates="carts")
-    product = relationship("Product", back_populates="cart_items")
+    
+    
+    user = relationship("User", back_populates="carts") #relation with user
+    items = relationship("CartItem", back_populates="cart", cascade="all, delete-orphan") # relation with cart items

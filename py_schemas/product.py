@@ -31,6 +31,8 @@ class ProductResponse(BaseModel):
     stock : int = 0
     created_at : datetime
     updated_at: datetime
+    discount_percentage: Optional[float] = 0.0
+    discounted_price: float
 
 class DiscountedProductResponse(ProductResponse):
     discount_percentage: Optional[float] = 0.0

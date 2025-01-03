@@ -142,7 +142,7 @@ async def apply_discount_route(
 @router.get("/check-stock", description="Check If Stocks are low.")
 async def check_low_stock(
     stock_limit: int = Query(10, description="Threshold for low stock"),
-    skip : int = 0,
+    skip : int = 0, 
     limit : int = 10,
     db: Session =  Depends(get_db),
     current_admin : dict = Depends(check_admin)
