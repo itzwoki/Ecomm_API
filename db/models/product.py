@@ -32,5 +32,5 @@ class Product(Base, TimeStamp):
             return datetime.now() < expiration_time
         return False
 
-    cart_items = relationship("CartItem", back_populates="product")
-    order_items = relationship("OrderItem", back_populates="product")
+    cart_items = relationship("CartItem", back_populates="product") #relation with the CartItem Model.
+    order_items = relationship("OrderItem", back_populates="product") #relation with OrderItem table.

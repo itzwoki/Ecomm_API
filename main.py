@@ -6,7 +6,7 @@ from userRoutes.userRoutes import router as userRouter
 from productRoutes.productRoutes import router as productRouter
 from cartRoutes.cartRoutes import router as cartRouter
 
-
+#creating all the Tables based on the Model in db/model/...
 user.Base.metadata.create_all(bind=engine)
 product.Base.metadata.create_all(bind=engine)
 order.Base.metadata.create_all(bind=engine)
@@ -27,7 +27,7 @@ license_info={
     "name": "Associate Software Engineer"
 }
 )
-
+#adding routes
 app.include_router(userRouter)
 app.include_router(productRouter)
 app.include_router(cartRouter)

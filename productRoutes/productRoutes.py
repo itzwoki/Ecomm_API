@@ -10,7 +10,7 @@ from py_schemas.product import ProductCreate, ProductResponse, ProductUpdate, Di
 
 router = APIRouter(prefix="/products")
 
-@router.post("/", response_model=ProductResponse)
+@router.post("/", response_model=ProductResponse, description="Creat a Product Based on ProductCreate Schema.")
 async def create_product(
     product : ProductCreate,
     db: Session = Depends(get_db),
@@ -33,7 +33,7 @@ async def create_product(
         updated_at=new_product.updated_at
     )
 
-@router.get("/get-all-products", response_model=List[ProductResponse])
+@router.get("/get-all-products", response_model=List[ProductResponse], description="Returns all the products listed in Product Table.")
 async def get_all_products(
     db: Session = Depends(get_db),
     user_id : dict = Depends(get_current_user)
@@ -42,7 +42,7 @@ async def get_all_products(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authrorized.")
     return await get_products(db)
 
-@router.get("/get-product/{product_id}", response_model=ProductResponse)
+@router.get("/get-product/{product_id}", response_model=ProductResponse, description="Returns a single product Based on ID.")
 async def get_by_id(
     product_id: int,
     db: Session = Depends(get_db),
@@ -56,7 +56,8 @@ async def get_by_id(
         )
     return await get_product(product_id,db)
 
-@router.get("/search-name/{product_name}", response_model=List[ProductResponse])
+@router.get("/search-name/{product_name}", response_model=List[ProductResponse],
+description="Search for Products with Name/keyword.")
 async def search_by_name(
     product_name: str,
     db : Session = Depends(get_db),
@@ -66,7 +67,8 @@ async def search_by_name(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authrorized.")
     return await search_name(product_name, db)
 
-@router.patch("/update-product/{product_id}", response_model=ProductResponse)
+@router.patch("/update-product/{product_id}", response_model=ProductResponse,
+description="Update Details of a product base on ProductUpdate Schema. ")
 async def update_product_by_id(
         product_id : int,
         product: ProductUpdate,
@@ -81,7 +83,7 @@ async def update_product_by_id(
         )
     return await product_update(product_id, product, db)
 
-@router.delete("/delete-by-id/{product_id}")
+@router.delete("/delete-by-id/{product_id}", description="Delete a Product.")
 async def delete_by_id(
     product_id: int,
     db: Session = Depends(get_db),
