@@ -11,28 +11,36 @@ class OrderStatusEnum(str, Enum):
     DELIVERED = "delivered"
     CANCELED = "canceled"
 
-class OrderCreate(BaseModel):
-    total_price: float
-    status: OrderStatusEnum = OrderStatusEnum.PENDING
-    order_items: List[int]
+class OrderItemCreate(BaseModel):
+    product_id: int
+    quantity: int
+    price_per_unit: float
 
-class OrderUpdate(BaseModel):
-    total_price : Optional[float] = None
-    status : Optional[OrderStatusEnum] = None
-    order_items : Optional[List[int]] = None
+class OrderItemUpdate(BaseModel):
+    quantity: Optional[int] = None
 
 class OrderItemResponse(BaseModel):
     id: int
-    quantity : int
+    product_name: str
+    quantity: int
     price_per_unit: float
+
+class OrderCreate(BaseModel):
+    total_price: Optional[float] = None
+    status: OrderStatusEnum = OrderStatusEnum.PENDING
+    order_items: List[OrderItemCreate]
+
+class OrderUpdate(BaseModel):
+    status: OrderStatusEnum = None
 
 class OrderResponse(BaseModel):
     id: int
-    user_id : int
-    total_price : float
+    user_id: int
+    total_price: float
     status: OrderStatusEnum
-    created_at : datetime
+    created_at: datetime
     updated_at: datetime
+    order_items: List[OrderItemResponse]
 
     class Config:
         orm_mode = True

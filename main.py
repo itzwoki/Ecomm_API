@@ -5,6 +5,7 @@ from db.models import user,product, order, cart, order_item,payment, CartItem
 from userRoutes.userRoutes import router as userRouter
 from productRoutes.productRoutes import router as productRouter
 from cartRoutes.cartRoutes import router as cartRouter
+from orderRoutes.orderRoutes import router as orderRouter
 
 #creating all the Tables based on the Model in db/model/...
 user.Base.metadata.create_all(bind=engine)
@@ -31,3 +32,4 @@ license_info={
 app.include_router(userRouter)
 app.include_router(productRouter)
 app.include_router(cartRouter)
+app.include_router(orderRouter)

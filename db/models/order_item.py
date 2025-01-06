@@ -14,4 +14,4 @@ class OrderItem(Base, TimeStamp):
     price_per_unit = Column(Float, nullable=False)
 
     order = relationship("Order", back_populates="order_items")
-    product = relationship("Product")
+    product = relationship("Product", back_populates="order_items")
