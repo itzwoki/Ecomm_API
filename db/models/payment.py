@@ -15,6 +15,7 @@ class PaymentMethodEnum(str,PyEnum):
     STRIPE = "stripe"
     CREDIT_CARD = "credit_card"
     DEBIT_CARD = "debit_card"
+    CASH_ON_DELIVERY = "cash_on_delivery"
 
 class Payment(Base, TimeStamp): 
     __tablename__ = "payments"

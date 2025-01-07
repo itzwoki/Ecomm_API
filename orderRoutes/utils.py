@@ -56,3 +56,24 @@ async def convert_cart_to_order(user_id : int, db: Session):
             ]
         }
     }
+
+async def up_order(user_id: int, db: Session, stat: str):
+    order = db.query(Order).filter(Order.user_id == user_id).first()
+
+    if not order:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Order Exists yet.")
+    
+    order.status = stat
+    db.commit()
+    db.refresh(order)
+
+    return {
+        "message": "Order status updated successfully.",
+        "order": {
+            "id": order.id,
+            "user_id": order.user_id,
+            "total_price": order.total_price,
+            "status": order.status,
+        }
+    }
+

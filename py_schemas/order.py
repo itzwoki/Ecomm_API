@@ -31,7 +31,13 @@ class OrderCreate(BaseModel):
     order_items: List[OrderItemCreate]
 
 class OrderUpdate(BaseModel):
-    status: OrderStatusEnum = None
+    status: str = None
+    
+class OrderUpdateResponse(BaseModel):
+    id: int
+    user_id: int
+    total_price: float
+    status: OrderStatusEnum
 
 class OrderResponse(BaseModel):
     id: int
