@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from enum import Enum
 
@@ -13,18 +13,15 @@ class PaymentMethodEnum(str, Enum):
     STRIPE = "stripe"
     CREDIT_CARD = "credit_card"
     DEBIT_CARD = "debit_card"
+    CASH_ON_DELIVERY = "cash_on_delivery"
 
-class PaymentCreate(BaseModel):
-    order_id :int
-    payment_method : PaymentMethodEnum
-    transaction_id : str
-    amount : float
+class PaymentRequest(BaseModel):
+    payment_method: PaymentMethodEnum
 
-class PaymentUpdate(BaseModel):
-    payment_method : PaymentMethodEnum
-    payment_status: PaymentStatusEnum
-    transaction_id : str
-    amount : float
+    @field_validator('payment_method')
+    def validate_payment_method(cls, v):
+        return v.lower()
+
 
 class PaymentResponse(BaseModel):
     id : int
